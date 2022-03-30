@@ -1,6 +1,7 @@
-package com.capgemini.springboot.demo.controller;
+package com.capgemini.springboot.demo.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -9,20 +10,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 
 import com.capgemini.springboot.demo.model.AppUser;
 import com.capgemini.springboot.demo.model.Role;
 
 @SpringBootTest
-public class AppUserControllerTests {
+public class AppUserServiceTests {
 
 	Logger LOG = LoggerFactory.getLogger(this.getClass());
 
-	private static AppUser appUser;
-
 	@Autowired
-	AppUserController appUserController;
+	private AppUserService appUserService;
+
+	private static AppUser appUser;
 
 	@BeforeAll
 	public static void setUp() {
@@ -35,17 +35,19 @@ public class AppUserControllerTests {
 	}
 
 	@Test
-	public void testLoginHttpStatus() {
-		HttpStatus expected = HttpStatus.OK;
-		HttpStatus actual = appUserController.login(appUser).getStatusCode();
+	public void testLogin() {
+		LOG.info(appUser.toString());
+		AppUser expected = appUser;
+		AppUser actual = appUserService.loginUser(appUser);
 		assertEquals(expected, actual);
 	}
 
+//	@Disabled
 	@Test
-	public void testLoginHeaders() {
-		String expected = "[User " + appUser.getUserName() + " logged in successfully.]";
-		String actual = appUserController.login(appUser).getHeaders().get("message").toString();
-		assertEquals(expected, actual);
+	public void testLoginFailure() {
+		LOG.info(appUser.toString());
+		AppUser unexpected = appUser;
+		AppUser actual = appUserService.loginUser(new AppUser("Sonu", "Sonu", Role.EMPLOYEE));
+		assertNotEquals(unexpected, actual);
 	}
-
 }
